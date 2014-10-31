@@ -89,32 +89,13 @@ citrus.thresholdCVs.quick.classification = function(modelType,features,labels,re
   return(data.frame(errorRates))
 }
 
-#' @rdname citrus.thresholdCVs
-#' @name citrus.thresholdCVs
-#' @export
-citrus.thresholdCVs.classification = function(modelType,foldFeatures,labels,regularizationThresholds,folds,foldModels,leftoutFeatures,...){
-    
-  leftoutPredictions = lapply(1:length(leftoutFeatures),.foldPredict,models=foldModels,features=leftoutFeatures)
-  
-  predictionSuccess = lapply(1:length(leftoutPredictions),.foldScore,folds=folds,predictions=leftoutPredictions,labels=labels)
-  
-  thresholdErrorRates = .calculatePredictionErrorRate(predictionSuccess=predictionSuccess,regularizationThresholds=regularizationThresholds)
-  
-  thresholdFDRRates = .calculateTypeFDRRate(foldModels=foldModels,foldFeatures=foldFeatures,labels=labels,modelType=modelType)
-  
-  results = data.frame(threshold=regularizationThresholds,cvm=thresholdErrorRates$cvm,cvsd=thresholdErrorRates$cvsd);
-  if (!is.null(thresholdFDRRates)){
-    results$fdr = thresholdFDRRates
-  }
-  return(results)
-}
 
-.foldPredict = function(index,models,features){
+foldPredict.classification = function(index,models,features){
   citrus.predict.classification(models[[index]],features[[index]])
 }
 
-.foldScore = function(index,folds,predictions,labels){
-  return(predictions[[index]]==labels[folds[[index]]])
+foldScore.classification = function(index,folds,predictions,labels){
+  return(predictions[[index]]!=labels[folds[[index]]])
 }
 
 #' @rdname citrus.predict
@@ -161,23 +142,6 @@ citrus.generateRegularizationThresholds.classification = function(features,label
   
 }
 
-
-.calculatePredictionErrorRate = function(predictionSuccess,regularizationThresholds){
-  nFolds=length(predictionSuccess)
-  counter=1;
-  tmp=list()
-  for (i in 1:nFolds){
-    for (j in 1:nrow(predictionSuccess[[i]])){
-      tmp[[counter]] = predictionSuccess[[i]][j,]
-      length(tmp[[counter]])=length(regularizationThresholds)
-      counter=counter+1;
-    }
-  }
-  bound = do.call("rbind",tmp)
-  thresholdMeans= 1-apply(bound,2,mean,na.rm=T)
-  thresholdSEMs = apply(bound,2,sd,na.rm=T)/sqrt(apply(!is.na(bound),2,sum))
-  return(list(cvm=thresholdMeans,cvsd=thresholdSEMs))
-} 
 
 .calculateTypeFDRRate = function(foldModels,foldFeatures,labels,modelType){
   if (modelType=="pamr"){
