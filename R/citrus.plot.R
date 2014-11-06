@@ -14,11 +14,12 @@
   colLabels = citrus.combinedFCSSet$fileChannelNames[[1]][[1]]
   reagentNames = citrus.combinedFCSSet$fileReagentNames[[1]][[1]]
   displayNames = colLabels
-  displayNames[nchar(reagentNames)>2] = reagentNames[nchar(reagentNames)>2]
+  displayNames[nchar(reagentNames)>1] = reagentNames[nchar(reagentNames)>1]
   if (all(is.numeric(clusteringColumns))){
     return(displayNames[clusteringColumns])
   } else {
-    names(displayNames) = colLabels
+    #names(displayNames) = colLabels
+    names(displayNames) = colnames(citrus.combinedFCSSet$data)[1:(length(colnames(citrus.combinedFCSSet$data))-2)]
     return(as.vector(displayNames[clusteringColumns]))
   }
   
