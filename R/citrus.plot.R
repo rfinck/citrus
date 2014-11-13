@@ -133,7 +133,7 @@ citrus.plotModelDifferentialFeatures.classification = function(differentialFeatu
     nonzeroFeatureNames = differentialFeatures[[cvPoint]][["features"]]
 
     # Write features to file for easy parsing
-    write.table(features[,nonzeroFeatureNames],file=file.path(modelOutputDirectory,paste("features_",cvPoint,".csv",sep="")),quote=F,sep=",")
+    write.csv(features[,nonzeroFeatureNames],file=file.path(modelOutputDirectory,paste("features_",cvPoint,".csv",sep="")),quote=F)
 
     melted = melt(data.frame(features[,nonzeroFeatureNames,drop=F],labels=labels,check.names=F),id.vars="labels")
     
@@ -155,7 +155,7 @@ citrus.plotModelDifferentialFeatures.continuous = function(differentialFeatures,
     nonzeroFeatureNames = differentialFeatures[[cvPoint]][["features"]]
     
     # Write features to file for easy parsing
-    write.table(features[,nonzeroFeatureNames],file=file.path(modelOutputDirectory,paste("features_",cvPoint,".csv",sep="")),quote=F,sep=",")
+    write.csv(features[,nonzeroFeatureNames],file=file.path(modelOutputDirectory,paste("features_",cvPoint,".csv",sep="")),quote=F)
     
     melted = melt(data.frame(features[,nonzeroFeatureNames,drop=F],labels=labels,check.names=F),id.vars="labels")
     
